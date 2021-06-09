@@ -1,9 +1,11 @@
 package grabxkcd
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
 
 type appEnv struct {
@@ -16,6 +18,8 @@ type appEnv struct {
 func (app *appEnv) fromArgs(args []string) error {
 	// Shallow copy of default client
 	app.hc = *http.DefaultClient
+	fl := flag.NewFlagSet("xkcd-grab", flag.ContinueOnError)
+	fl.DurationVar(&app.hc.Timeout, "t", 30*time.Second, "Client timeout")
 	return nil
 }
 
