@@ -25,8 +25,12 @@ func (app *appEnv) fromArgs(args []string) error {
 		&app.comicNo, "n", LatestComic, "Comic number to fetch (default latest)",
 	)
 	fl.DurationVar(&app.hc.Timeout, "t", 30*time.Second, "Client timeout")
-	fl.BoolVar(&app.saveImage, "s", false, "Save image to current directory")
-	outputType := fl.String("o", "text", "Print output in format: text/json")
+	fl.BoolVar(
+		&app.saveImage, "s", false, "Save image to current directory",
+	)
+	outputType := fl.String(
+		"o", "text", "Print output in format: text/json",
+	)
 	if err := fl.Parse(args); err != nil {
 		return err
 	}
