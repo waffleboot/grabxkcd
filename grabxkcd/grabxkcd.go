@@ -1,12 +1,27 @@
 package grabxkcd
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"time"
 )
+
+func CLI(args []string) int {
+	var app appEnv
+	err := app.fromArgs(args)
+	if err != nil {
+		return 2
+	}
+	if err = app.run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Runtime error: %v\n", err)
+		return 1
+	}
+	return 0
+}
 
 type appEnv struct {
 	hc         http.Client
@@ -14,8 +29,6 @@ type appEnv struct {
 	saveImage  bool
 	outputJSON bool
 }
-
-const LatestComic ComicNumber = 0
 
 func (app *appEnv) fromArgs(args []string) error {
 	// Shallow copy of default client
@@ -44,18 +57,52 @@ func (app *appEnv) fromArgs(args []string) error {
 }
 
 func (app *appEnv) run() error {
-	return nil
+	u := BuildURL(app.comicNo)
+
+	var resp APIResponse
+	if err := app.fetchJSON(u, &resp); err != nil {
+		return err
+	}
+
+	if resp.Date() == nil {
+		return fmt.Errorf("could not parse date of comic: %q/%q/%q",
+			resp.Year, resp.Month, resp.Day)
+	}
+	if app.saveImage {
+		if err := app.fetchAndSave(resp.Image, resp.Filename()); err != nil {
+			return err
+		}
+		fmt.Fprintf(os.Stderr, "Saved: %q\n", resp.Filename())
+	}
+	if app.outputJSON {
+		return printJSON(resp)
+	}
+
+	return prettyPrint(resp)
 }
 
-func CLI(args []string) int {
-	var app appEnv
-	err := app.fromArgs(args)
+func (app *appEnv) fetchJSON(url string, data interface{}) error {
+	resp, err := app.hc.Get(url)
 	if err != nil {
-		return 2
+		return err
 	}
-	if err = app.run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Runtime error: %v\n", err)
-		return 1
+	defer resp.Body.Close()
+
+	return json.NewDecoder(resp.Body).Decode(data)
+}
+
+func (app *appEnv) fetchAndSave(url, destPath string) error {
+	resp, err := app.hc.Get(url)
+	if err != nil {
+		return err
 	}
-	return 0
+	defer resp.Body.Close()
+
+	f, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(f, resp.Body)
+	return err
 }
