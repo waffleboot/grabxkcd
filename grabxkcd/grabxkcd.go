@@ -15,10 +15,13 @@ type appEnv struct {
 	outputJSON bool
 }
 
+const LatestComic = 0
+
 func (app *appEnv) fromArgs(args []string) error {
 	// Shallow copy of default client
 	app.hc = *http.DefaultClient
 	fl := flag.NewFlagSet("xkcd-grab", flag.ContinueOnError)
+	fl.IntVar(&app.comicNo, "n", LatestComic, "Comic number to fetch (default latest)")
 	fl.DurationVar(&app.hc.Timeout, "t", 30*time.Second, "Client timeout")
 	return nil
 }
