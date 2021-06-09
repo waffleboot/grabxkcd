@@ -15,13 +15,15 @@ type appEnv struct {
 	outputJSON bool
 }
 
-const LatestComic = 0
+const LatestComic ComicNumber = 0
 
 func (app *appEnv) fromArgs(args []string) error {
 	// Shallow copy of default client
 	app.hc = *http.DefaultClient
 	fl := flag.NewFlagSet("xkcd-grab", flag.ContinueOnError)
-	fl.IntVar(&app.comicNo, "n", LatestComic, "Comic number to fetch (default latest)")
+	fl.IntVar(
+		&app.comicNo, "n", LatestComic, "Comic number to fetch (default latest)",
+	)
 	fl.DurationVar(&app.hc.Timeout, "t", 30*time.Second, "Client timeout")
 	fl.BoolVar(&app.saveImage, "s", false, "Save image to current directory")
 	outputType := fl.String("o", "text", "Print output in format: text/json")
