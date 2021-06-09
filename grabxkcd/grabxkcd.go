@@ -2,10 +2,15 @@ package grabxkcd
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 )
 
 type appEnv struct {
+	hc         http.Client
+	comicNo    int
+	saveImage  bool
+	outputJSON bool
 }
 
 func (app *appEnv) fromArgs([]string) error {
