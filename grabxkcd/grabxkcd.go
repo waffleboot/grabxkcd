@@ -23,6 +23,7 @@ func (app *appEnv) fromArgs(args []string) error {
 	fl := flag.NewFlagSet("xkcd-grab", flag.ContinueOnError)
 	fl.IntVar(&app.comicNo, "n", LatestComic, "Comic number to fetch (default latest)")
 	fl.DurationVar(&app.hc.Timeout, "t", 30*time.Second, "Client timeout")
+	fl.BoolVar(&app.saveImage, "s", false, "Save image to current directory")
 	return nil
 }
 
