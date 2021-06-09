@@ -13,7 +13,7 @@ type appEnv struct {
 	outputJSON bool
 }
 
-func (app *appEnv) fromArgs([]string) error {
+func (app *appEnv) fromArgs(args []string) error {
 	return nil
 }
 
