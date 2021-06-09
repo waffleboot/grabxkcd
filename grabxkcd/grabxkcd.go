@@ -14,6 +14,8 @@ type appEnv struct {
 }
 
 func (app *appEnv) fromArgs(args []string) error {
+	// Shallow copy of default client
+	app.hc = *http.DefaultClient
 	return nil
 }
 
