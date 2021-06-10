@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func CLI(args []string) int {
+func CLI(args ...string) int {
 	var app appEnv
 	err := app.fromArgs(args)
 	if err != nil {
@@ -30,7 +30,7 @@ type appEnv struct {
 	outputJSON bool
 }
 
-func (app *appEnv) fromArgs(args []string) error {
+func (app *appEnv) fromArgs(args ...string) error {
 	// Shallow copy of default client
 	app.hc = *http.DefaultClient
 	fl := flag.NewFlagSet("xkcd-grab", flag.ContinueOnError)

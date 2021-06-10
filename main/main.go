@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	os.Exit(grabxkcd.CLI(os.Args[1:]))
+	os.Exit(grabxkcd.CLI(os.Args[1:]...))
 }
